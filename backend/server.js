@@ -36,9 +36,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.resolve(__dirname, "../client/build")));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/codes", authenticateUser, codeRoutes);
-app.use("/api/v1/codes/", codeRoutes);
+app.use("/api/v1/codes/all", codeRoutes);
 app.use("/gpt", gptRoutes);
-app.use("/api/v1/questions/", questionRoutes);
+app.use("/api/v1/questions", questionRoutes);
 //app.use("/api/v1/gpt/all", gptRoutes);
 
 app.get("*", (req, res) => {
@@ -64,6 +64,14 @@ const limiter = raterLimit({
 });
 
 app.use(limiter);
+//Routes
+app.get("/", (req, res) => {
+  res.json({ msg: "Welcome to the concept app!" });
+});
+
+app.get("/api/v1", (req, res) => {
+  res.json({ msg: "API" });
+});
 
 //Server listening
 const port = process.env.PORT || 8000;

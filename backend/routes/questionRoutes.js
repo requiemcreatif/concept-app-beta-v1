@@ -8,8 +8,7 @@ import {
   deleteQuestion,
 } from "../controllers/questionController.js";
 
-router.route("/").post(createQuestion);
-router.route("/all").get(getAllQuestions);
+router.route("/").post(createQuestion).get(getAllQuestions);
 router.route("/:id").get(getQuestionById).patch(updateQuestion).delete(deleteQuestion);
 
 export default router;

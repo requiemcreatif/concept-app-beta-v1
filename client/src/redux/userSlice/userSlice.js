@@ -86,6 +86,58 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+// Create Code
+export const createCode = createAsyncThunk(
+  "user/createCode",
+  async (payload, { getState, dispatch }) => {
+    const { title, description, code, language, codeStatus } = payload;
+    const { token } = getState().user;
+    const authAxios = createAuthAxios(token);
+    try {
+      await authAxios.post("/codes", { title, description, code, language, codeStatus });
+      dispatch(createCodeSuccess());
+      dispatch(clearFormValues());
+      dispatch(hideAlert());
+    } catch (error) {
+      if (error.response.status === 401) return;
+      throw error.response.data.msg;
+    }
+  }
+);
+
+// Get Codes
+
+export const getCodes = createAsyncThunk("user/getCodes", async (_, { getState, dispatch }) => {
+  const { page } = getState().user;
+  let url = `/codes/?page=${page}`;
+  try {
+    const { data } = await authAxios(url);
+    const { codes, totalCodes, numOfPages } = data;
+    return { codes, totalCodes, numOfPages };
+  } catch (error) {
+    console.log(error.response);
+  }
+});
+
+// All Get Codes
+export const getAllCodes = createAsyncThunk(
+  "user/getAllCodes",
+  async (_, { getState, dispatch }) => {
+    const { page } = getState().user;
+    const authAxios = createAuthAxios(getState().user.token);
+    const url = `/codes/all?page=${page}`;
+    try {
+      const { data } = await authAxios.get(url);
+      const { codes, totalCodes, numOfPages } = data;
+      return { codes, totalCodes, numOfPages };
+    } catch (error) {
+      console.log(error.response);
+      throw error;
+    }
+    dispatch(hideAlert());
+  }
+);
+
 const initialState = {
   isLoading: false,
   showAlert: false,
@@ -94,6 +146,25 @@ const initialState = {
   user: user ? JSON.parse(user) : null,
   token: token,
   isEdit: false,
+  editCodeId: "",
+  title: "",
+  description: "",
+  code: "",
+  languageOptions: ["JavaScript", "HTML", "CSS", "React", "Node", "Express", "MongoDB"],
+  language: "JavaScript",
+  codeStatusOptions: ["rejected", "approved", "pending"],
+  codeStatus: "pending",
+  codes: [],
+  totalCodes: 0,
+  numOfPages: 1,
+  page: 1,
+  search: "",
+  searchQuery: "",
+  sortBy: "createdAt:desc",
+  sortQuery: "",
+  codeStatusQuery: "",
+  languageQuery: "",
+  message: "",
 };
 
 const userSlice = createSlice({
@@ -163,6 +234,73 @@ const userSlice = createSlice({
       state.alertText = "Please provide all the values!";
       state.alertType = "danger";
     },
+    createCode: (state, action) => {
+      state.isLoading = true;
+    },
+    createCodeSuccess: (state, action) => {
+      state.isLoading = false;
+      state.showAlert = true;
+      state.alertText = "Code created successfully! Redirecting..";
+      state.alertType = "success";
+    },
+    createCodeFail: (state, action) => {
+      state.isLoading = false;
+      state.showAlert = true;
+      state.alertText = action.payload.msg;
+      state.alertType = "danger";
+    },
+    getCode: (state, action) => {
+      state.isLoading = true;
+      state.showAlert = false;
+    },
+    getCodeSuccess: (state, action) => {
+      state.isLoading = false;
+      state.showAlert = true;
+      state.title = action.payload.title;
+      state.description = action.payload.description;
+      state.code = action.payload.code;
+      state.language = action.payload.language;
+      state.codeStatus = action.payload.codeStatus;
+      state.editCodeId = action.payload._id;
+      state.totalCodes = action.payload.totalCodes;
+      state.numOfPages = action.payload.numOfPages;
+      state.codes = action.payload.codes;
+    },
+    editcode: (state, action) => {
+      const codes = state.codes.find((code) => code._id === action.payload);
+      const { _id, title, description, code, language, codeStatus } = codes;
+      state.isEdit = true;
+      state.editCodeId = _id;
+      state.title = title;
+      state.description = description;
+      state.code = code;
+      state.language = language;
+      state.codeStatus = codeStatus;
+    },
+    deleteCode: (state, action) => {
+      state.isLoading = true;
+    },
+    deleteCodeSuccess: (state, action) => {
+      state.isLoading = false;
+      state.showAlert = true;
+      state.alertText = "Code deleted successfully!";
+      state.alertType = "success";
+    },
+    editCodeSuccess: (state, action) => {
+      state.isLoading = false;
+      state.showAlert = true;
+      state.alertText = `Code updated successfully! Thank you ${state.user.name}! `;
+      state.alertType = "success";
+    },
+    editCodeFail: (state, action) => {
+      state.isLoading = false;
+      state.showAlert = true;
+      state.alertText = action.payload.msg;
+      state.alertType = "danger";
+    },
+    changePage: (state, action) => {
+      state.page = action.payload;
+    },
     hideAlert: (state, action) => {
       state.showAlert = false;
       state.alertText = "";
@@ -173,9 +311,11 @@ const userSlice = createSlice({
       state[name] = value;
     },
     clearFormValues: (state) => {
-      state.name = "";
-      state.email = "";
-      state.password = "";
+      state.title = "";
+      state.description = "";
+      state.code = "";
+      state.language = "JavaScript";
+      state.codeStatus = "pending";
     },
     extraReducers: (builder) => {
       builder
@@ -192,6 +332,33 @@ const userSlice = createSlice({
           // ...
         })
         .addCase(registerUser.rejected, (state, action) => {
+          state.isLoading = false;
+          state.showAlert = true;
+          state.alertText = action.error.message;
+          state.alertType = "danger";
+        })
+        .addCase(getCodes.pending, (state) => {
+          state.isLoading = true;
+        })
+        .addCase(getCodes.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.codes = action.payload.codes;
+          state.totalCodes = action.payload.totalCodes;
+          state.numOfPages = action.payload.numOfPages;
+        })
+        .addCase(getCodes.rejected, (state, action) => {
+          console.log(action.error.message);
+        })
+        .addCase(getAllCodes.pending, (state) => {
+          state.isLoading = true;
+        })
+        .addCase(getAllCodes.fulfilled, (state, action) => {
+          state.isLoading = false;
+          state.codes = action.payload.codes;
+          state.totalCodes = action.payload.totalCodes;
+          state.numOfPages = action.payload.numOfPages;
+        })
+        .addCase(getAllCodes.rejected, (state, action) => {
           state.isLoading = false;
           state.showAlert = true;
           state.alertText = action.error.message;

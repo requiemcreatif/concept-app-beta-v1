@@ -17,7 +17,7 @@ const createQuestion = async (req, res) => {
 
 //get all questions
 const getAllQuestions = async (req, res) => {
-  const { category, difficulty, question, answers, correctAnswer } = req.query;
+  const { category, difficulty } = req.query;
 
   const query = {};
 
@@ -29,20 +29,8 @@ const getAllQuestions = async (req, res) => {
     query.difficulty = difficulty;
   }
 
-  if (question) {
-    query.question = question;
-  }
-
-  if (answers) {
-    query.answers = answers;
-  }
-
-  if (correctAnswer) {
-    query.correctAnswer = correctAnswer;
-  }
-
   const questions = await Question.find(query);
-  //console.log(questions);
+  console.log(questions);
 
   res.status(StatusCodes.OK).json({ questions });
 };
