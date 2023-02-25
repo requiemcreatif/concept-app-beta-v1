@@ -1,0 +1,22 @@
+.main {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+
+  grid-template-areas:
+    "nav "
+    "aside ";
+}
+
+.nav {
+  position: fixed;
+  grid-area: nav;
+  z-index: 200;
+}
+
+.aside {
+  grid-area: aside;
+  grid-template-columns: auto 1fr;
+  display: grid;
+  z-index: 100;
+}

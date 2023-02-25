@@ -1,0 +1,209 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,600;0,800;0,900;1,900&family=Rubik:wght@400;500;700&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Blinker:wght@100;200;300;400;600;700;800;900&family=Montserrat:wght@300;400;500;700;800&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,500;1,900&display=swap");
+
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,200;0,300;0,400;0,600;0,800;0,900;1,900&family=Rubik:wght@400;500;700&display=swap"); */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: 1.6rem;
+  margin: 0 auto;
+  /* background-color: #f1f1f1; */
+}
+p,
+a,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Montserrat", sans-serif;
+}
+
+h1,
+h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 3.5rem;
+}
+
+/* SearchBar CSS */
+
+.search {
+  width: 100%;
+  position: relative;
+  display: flex;
+}
+
+.searchTerm {
+  width: 100%;
+  border: 3px solid #00b4cc;
+  border-right: none;
+  padding: 5px;
+  height: 20px;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  color: #9dbfaf;
+}
+
+.searchTerm:focus {
+  color: #00b4cc;
+}
+
+.searchButton {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #00b4cc;
+  background: #00b4cc;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/*Resize the wrap to see the search bar change!*/
+.wrap {
+  width: 30%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Dark mode switch */
+.switch {
+  --button-width: 2.5em;
+  --button-height: 1.5em;
+  --toggle-diameter: 1em;
+  --button-toggle-offset: calc((var(--button-height) - var(--toggle-diameter)) / 2);
+  --toggle-shadow-offset: 10px;
+  --toggle-wider: 3em;
+  --color-grey: #cccccc;
+  /* --color-green: #fe5f55; */
+  --color-green: #fff;
+}
+
+.slider {
+  display: inline-block;
+  width: var(--button-width);
+  height: var(--button-height);
+  background-color: var(--color-grey);
+  border-radius: calc(var(--button-height) / 2);
+  position: relative;
+  transition: 0.3s all ease-in-out;
+}
+
+.slider::after {
+  content: "";
+  display: inline-block;
+  width: var(--toggle-diameter);
+  height: var(--toggle-diameter);
+  background-color: #053651;
+  border-radius: calc(var(--toggle-diameter) / 2);
+  position: absolute;
+  top: var(--button-toggle-offset);
+  transform: translateX(var(--button-toggle-offset));
+  box-shadow: var(--toggle-shadow-offset) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, 0.1);
+  transition: 0.3s all ease-in-out;
+}
+
+.switch input[type="checkbox"]:checked + .slider {
+  background-color: var(--color-green);
+}
+
+.switch input[type="checkbox"]:checked + .slider::after {
+  transform: translateX(
+    calc(var(--button-width) - var(--toggle-diameter) - var(--button-toggle-offset))
+  );
+  box-shadow: calc(var(--toggle-shadow-offset) * -1) 0 calc(var(--toggle-shadow-offset) * 4)
+    rgba(0, 0, 0, 0.1);
+}
+
+.switch input[type="checkbox"] {
+  display: none;
+}
+
+.switch input[type="checkbox"]:active + .slider::after {
+  width: var(--toggle-wider);
+}
+
+.switch input[type="checkbox"]:checked:active + .slider::after {
+  transform: translateX(
+    calc(var(--button-width) - var(--toggle-wider) - var(--button-toggle-offset))
+  );
+}
+
+/* Alert */
+.alert {
+  padding: 1rem;
+  margin: 0 auto;
+  border-color: transparent;
+  border-radius: 5px;
+  text-align: center;
+  letter-spacing: 1px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  position: absolute;
+  top: 300px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-width: 500px;
+  transition: opacity 0.5s ease-in-out;
+  animation: zoomInOut 0.5s ease-in-out;
+}
+
+@keyframes zoomInOut {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.alert-danger {
+  color: #fff;
+  background: #9a1750;
+  font-size: 1.4rem;
+  font-weight: 600;
+  position: fixed;
+  top: 300px;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  max-width: 500px;
+  transition: opacity 0.5s ease-in-out;
+  animation: zoomInOut 0.5s ease-in-out;
+}
+.alert-success {
+  color: #fff;
+  background: #45a29e;
+  font-size: 1.4rem;
+  font-weight: 600;
+  position: fixed;
+  top: 300px;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  max-width: 500px;
+  transition: opacity 0.5s ease-in-out;
+  animation: zoomInOut 0.5s ease-in-out;
+}
+
+/* Layout */
+
+/* Card animations */
